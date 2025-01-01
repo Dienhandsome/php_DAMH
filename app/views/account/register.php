@@ -1,40 +1,42 @@
-<?php include 'app/views/shares/header.php'; ?> 
-<?php 
- 
-if (isset($errors)) { 
-    echo "<ul>"; 
-    foreach ($errors as $err) { 
-        echo "<li class='text-danger'>$err</li>"; 
-    } 
-    echo "</ul>"; 
-} 
- 
-?> 
- 
-<div class="card-body p-5 text-center"> 
-    <form class="user" action="/webbanhang/account/save" method="post"> 
-        <div class="form-group row"> 
-            <div class="col-sm-6 mb-3 mb-sm-0"> 
-                <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="username"> 
-            </div> 
-            <div class="col-sm-6"> 
-                <input type="text" class="form-control form-control-user" id="fullname" name="fullname" placeholder="fullname"> 
-            </div> 
-        </div> 
-        <div class="form-group row"> 
-            <div class="col-sm-6 mb-3 mb-sm-0"> 
-                <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="password"> 
-            </div> 
-            <div class="col-sm-6"> 
-                <input type="password" class="form-control form-control-user" id="confirmpassword" name="confirmpassword" placeholder="confirmpassword"> 
-            </div> 
-        </div> 
-        <div class="form-group text-center"> 
-            <button class="btn btn-primary btn-icon-split p-3"> 
-                Register
-                </button> 
-        </div> 
-    </form> 
- 
-</div> 
-<?php include 'app/views/shares/footer.php'; ?> 
+<?php include 'app/views/shares/header.php'; ?>
+
+<?php
+if (isset($errors)) {
+    echo "<ul>";
+    foreach ($errors as $err) {
+        echo "<li class='text-danger'>$err</li>";
+    }
+    echo "</ul>";
+}
+?>
+
+<div class="card-body p-5 text-center">
+<form action="/webbanhang/account/save" method="POST">
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required>
+    <br>
+
+    <label for="fullname">Full Name:</label>
+    <input type="text" name="fullname" id="fullname" required>
+    <br>
+
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
+    <br>
+
+    <label for="confirmpassword">Confirm Password:</label>
+    <input type="password" name="confirmpassword" id="confirmpassword" required>
+    <br>
+
+    <label for="role">Role:</label>
+    <select name="role" id="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+    </select>
+    <br>
+
+    <button type="submit">Register</button>
+</form>
+</div>
+
+<?php include 'app/views/shares/footer.php'; ?>

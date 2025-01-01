@@ -16,48 +16,53 @@ class AccountController {
         include_once 'app/views/account/login.php'; 
     } 
  
-    function save(){ 
-         
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
-            $username = $_POST['username'] ?? ''; 
-            $fullName = $_POST['fullname'] ?? ''; 
-            $password = $_POST['password'] ?? ''; 
-            $confirmPassword = $_POST['confirmpassword'] ?? ''; 
- 
-            $errors =[]; 
-            if(empty($username)){ 
-                $errors['username'] = "Vui long nhap userName!"; 
-            } 
-            if(empty($fullName)){ 
-                $errors['fullname'] = "Vui long nhap fullName!"; 
-            } 
-            if(empty($password)){ 
-                $errors['password'] = "Vui long nhap password!"; 
-            } 
-            if($password != $confirmPassword){ 
-                $errors['confirmPass'] = "Mat khau va xac nhan chua dung"; 
-            } 
-            //kiểm tra username đã được đăng ký chưa? 
-            $account = $this->accountModel->getAccountByUsername($username); 
- 
-            if($account){ 
-                $errors['account'] = "Tai khoan nay da co nguoi dang ky!"; 
-            } 
-             
-            if(count($errors) > 0){ 
-                include_once 'app/views/account/register.php'; 
-            }else{ 
+    function save() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $username = $_POST['username'] ?? '';
+            $fullName = $_POST['fullname'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $confirmPassword = $_POST['confirmpassword'] ?? '';
+            $role = $_POST['role'] ?? 'user'; // Mặc định là 'user' nếu không chọn
+    
+            $errors = [];
+    
+            if (empty($username)) {
+                $errors['username'] = "Vui lòng nhập username!";
+            }
+            if (empty($fullName)) {
+                $errors['fullname'] = "Vui lòng nhập fullName!";
+            }
+            if (empty($password)) {
+                $errors['password'] = "Vui lòng nhập password!";
+            }
+            if ($password != $confirmPassword) {
+                $errors['confirmPass'] = "Mật khẩu và xác nhận không đúng";
+            }
+    
+            // Kiểm tra username đã được đăng ký chưa?
+            $account = $this->accountModel->getAccountByUsername($username);
+            if ($account) {
+                $errors['account'] = "Tài khoản này đã có người đăng ký!";
+            }
+    
+            if (count($errors) > 0) {
+                include_once 'app/views/account/register.php';
+            } else {
+                // Mã hóa mật khẩu
                 $password = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
-                        
-                $result = $this->accountModel->save($username, $fullName, $password); 
-                 
-                if($result){ 
-                    header('Location: /webbanhang/account/login'); 
-                } 
-            } 
-        }        
-        
-    } 
+    
+                // Lưu tài khoản với role
+                $result = $this->accountModel->save($username, $fullName, $password, $role);
+    
+                if ($result) {
+                    header('Location: /webbanhang/account/login');
+                }
+            }
+        }
+    }
+    
+
+    
     function logout(){ 
          
         unset($_SESSION['username']); 
@@ -65,33 +70,33 @@ class AccountController {
  
         header('Location: /webbanhang/product'); 
     } 
-    public function checkLogin(){ 
-         // Kiểm tra xem liệu form đã được submit 
-         if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
-            $username = $_POST['username'] ?? ''; 
-            $password = $_POST['password'] ?? ''; 
- 
-            $account = $this->accountModel->getAccountByUserName($username); 
-            if ($account) { 
-                $pwd_hashed = $account->password; 
-                //check mat khau 
-                if (password_verify($password, $pwd_hashed)) { 
- 
-                    session_start(); 
- 
-                    // $_SESSION['user_id'] = $account->id; 
-                    // $_SESSION['user_role'] = $account->role; 
-                    $_SESSION['username'] = $account->username; 
- 
-                    header('Location: /webbanhang/product'); 
-                    exit; 
-                } 
-                else { 
-                    echo "Password incorrect."; 
-                } 
-            } else { 
-                echo "Bao loi khong tim thay tai khoan"; 
-            } 
-        } 
-    } 
+    public function checkLogin() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $username = $_POST['username'] ?? '';
+            $password = $_POST['password'] ?? '';
+    
+            $account = $this->accountModel->getAccountByUsername($username);
+            if ($account) {
+                $pwd_hashed = $account->password;
+                // Kiểm tra mật khẩu
+                if (password_verify($password, $pwd_hashed)) {
+                    session_start();
+    
+                    // Lưu thông tin người dùng vào session
+                    $_SESSION['username'] = $account->username;
+                    $_SESSION['user_role'] = $account->role; // Lưu role vào session
+    
+                    header('Location: /webbanhang/product');
+                    exit;
+                } else {
+                    echo "Mật khẩu không đúng.";
+                }
+            } else {
+                echo "Không tìm thấy tài khoản.";
+            }
+        }
+    }
+    
+
+    
 }

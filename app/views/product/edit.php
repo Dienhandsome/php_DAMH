@@ -25,7 +25,7 @@
         <select id="category_id" name="category_id" class="form-control" required> 
             <?php if (!empty($categories) && is_array($categories)): ?>
                 <?php foreach ($categories as $category): ?>
-                    <option value="<?php echo htmlspecialchars($category['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <option value="<?php echo htmlspecialchars($category['id'], ENT_QUOTES, 'UTF-8'); ?>" <?php echo $product->category_id == $category['id'] ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?>
                     </option>
                 <?php endforeach; ?>
@@ -36,15 +36,23 @@
     </div> 
 
     <div class="form-group">
-        <label for="image">Hình ảnh</label>
-        <input type="file" class="form-control" id="image" name="image">
-        <?php if ($product->image): ?>
-            <img src="/webbanhang/<?php echo $product->image; ?>" alt="Product Image" style="max-width: 100px;">
-            <input type="hidden" name="existing_image" value="<?php echo $product->image; ?>">
-        <?php endif; ?>
+        <label for="image">Hình ảnh sản phẩm</label>
+        <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+        <img id="preview" src="/path/to/current/image/<?php echo htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8'); ?>" alt="Hình ảnh sản phẩm" style="max-width: 200px; margin-top: 10px;">
     </div>
 
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </div>
 </form>
 
-<?php include 'app/views/shares/footer.php'; ?> 
+<script>
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+        const output = document.getElementById('preview');
+        output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
